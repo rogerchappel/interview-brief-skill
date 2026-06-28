@@ -1,0 +1,44 @@
+{
+  "name": "interview-brief-skill",
+  "version": "0.1.0",
+  "description": "Local-first interview preparation brief skill for job and company notes.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "interview-brief": "bin/interview-brief.js"
+  },
+  "exports": {
+    ".": "./src/brief.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "fixtures",
+    "SKILL.md",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "build": "node scripts/build.js",
+    "smoke": "node bin/interview-brief.js fixtures/sample-interview.md --format markdown"
+  },
+  "keywords": [
+    "agent-skill",
+    "local-first",
+    "cli",
+    "interview-prep"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/interview-brief-skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/interview-brief-skill/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/interview-brief-skill#readme",
+  "engines": {
+    "node": ">=18"
+  }
+}
