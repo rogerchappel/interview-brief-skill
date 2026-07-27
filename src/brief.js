@@ -1,6 +1,11 @@
 import { loadInterviewInput } from './parser.js';
 
-const STOP = new Set(['the','and','for','with','from','that','this','role','company','your','you','are','will','into','about']);
+const STOP = new Set([
+  'the', 'and', 'for', 'with', 'from', 'that', 'this', 'role', 'company',
+  'your', 'you', 'are', 'will', 'into', 'about',
+  'ability', 'background', 'experience', 'experienced', 'knowledge', 'skills',
+  'teams', 'working', 'years',
+]);
 
 export function createBrief(path) {
   const input = loadInterviewInput(path);
