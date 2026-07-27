@@ -29,7 +29,12 @@ This package performs no network requests and writes no external accounts. Revie
 
 ## Limitations
 
-The MVP uses deterministic heuristics so results are easy to test and inspect. It does not scrape, enrich from live services, or call an LLM.
+The MVP uses deterministic heuristics so results are easy to test and inspect.
+Evidence matching requires an exact, non-generic keyword shared by the
+role/company text and candidate notes. Broad terms such as `experience`,
+`skills`, and `background` do not count as grounded overlap; synonyms and
+semantic similarity are not inferred. The package does not scrape, enrich from
+live services, or call an LLM.
 
 ## Development
 
