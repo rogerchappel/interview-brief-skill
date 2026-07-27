@@ -14,3 +14,26 @@ test('renders markdown questions and risks', () => {
   assert.match(markdown, /## Questions To Ask/);
   assert.match(markdown, /thank-you note/);
 });
+
+test('generic shared language is not treated as grounded role overlap', () => {
+  const brief = createBrief('fixtures/generic-overlap.json');
+
+  assert.deepEqual(brief.tailoredTalkingPoints, [
+    'Use candidate evidence: Retail customer experience',
+  ]);
+  assert.ok(brief.risks.includes(
+    'No strong keyword overlap found between candidate notes and role/company evidence.',
+  ));
+  assert.doesNotMatch(brief.tailoredTalkingPoints.join('\n'), /experience experience/);
+});
+
+test('specific shared skills produce an evidence-backed talking point', () => {
+  const brief = createBrief('fixtures/sample-interview.md');
+
+  assert.ok(brief.tailoredTalkingPoints.includes(
+    'Connect your local-first experience to the role evidence.',
+  ));
+  assert.ok(!brief.risks.includes(
+    'No strong keyword overlap found between candidate notes and role/company evidence.',
+  ));
+});
