@@ -20,12 +20,13 @@ function normalizeMarkdown(raw, path) {
   const sections = { source: path, role: '', company: '', candidate: '', meeting: '' };
   let current = 'role';
   for (const line of raw.split(/\r?\n/)) {
-    const heading = line.match(/^##\s+(Role|Company|Candidate|Meeting)/i);
+    const heading = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
     if (heading) {
-      current = heading[1].toLowerCase();
+      const recognized = heading[1].match(/^(Role|Company|Candidate|Meeting)$/i);
+      current = recognized ? recognized[1].toLowerCase() : null;
       continue;
     }
-    if (line.trim()) sections[current] += `${line.trim()}\n`;
+    if (current && line.trim()) sections[current] += `${line.trim()}\n`;
   }
   return sections;
 }

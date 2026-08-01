@@ -14,7 +14,13 @@ Run the CLI directly:
 ```bash
 node bin/interview-brief.js fixtures/sample-interview.md --format markdown
 node bin/interview-brief.js fixtures/sample-interview.md --format json
+node bin/interview-brief.js --format json fixtures/sample-interview.md
 ```
+
+The CLI accepts exactly one input path and an optional `--format` option in
+either order. The format defaults to `markdown` and must be `markdown` or
+`json`. Missing option values, unknown options, extra positional arguments,
+missing input, and unsupported formats print an error and exit nonzero.
 
 ## What It Does
 
