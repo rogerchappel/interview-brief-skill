@@ -47,6 +47,34 @@ test('unknown headings stop evidence collection for recognized sections', () => 
   assert.doesNotMatch(JSON.stringify(brief), /Free lunch|Office trivia/);
 });
 
+test('wrapped markdown list items remain complete logical signals', () => {
+  const brief = createBrief('fixtures/wrapped-interview.md');
+
+  assert.deepEqual(brief.roleSignals, [
+    'Build reliable release automation for users',
+    'Lead incident reviews',
+  ]);
+  assert.deepEqual(brief.companyThemes, [
+    'Developer tooling for distributed teams',
+  ]);
+  assert.deepEqual(brief.tailoredTalkingPoints, [
+    'Use candidate evidence: Shipped local-first collaboration features',
+  ]);
+  assert.equal(
+    brief.interviewQuestions[0],
+    'What would success look like for Build reliable release automation for users?',
+  );
+});
+
+test('meeting follow-up normalizes list markers and wrapped text', () => {
+  const brief = createBrief('fixtures/wrapped-interview.md');
+
+  assert.ok(brief.followUps.includes(
+    'Confirm meeting context: Friday at 10am with the hiring manager',
+  ));
+  assert.doesNotMatch(brief.followUps.join('\n'), /:\s*[-*]\s/);
+});
+
 test('CLI accepts the format option before or after the input', () => {
   for (const args of [
     ['--format', 'json', 'fixtures/sample-interview.md'],
