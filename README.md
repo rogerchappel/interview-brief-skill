@@ -19,15 +19,21 @@ node bin/interview-brief.js --format json fixtures/sample-interview.md
 
 The CLI accepts exactly one input path and an optional `--format` option in
 either order. The format defaults to `markdown` and must be `markdown` or
-`json`. Missing option values, unknown options, extra positional arguments,
-missing input, and unsupported formats print an error and exit nonzero.
+`json`. The input path must name a readable regular file. Files ending in
+`.json` must contain a top-level object; supported fields are `role` (or
+`job`), `company`, `candidate` (or `notes`), and `meeting`. Other files are
+parsed as Markdown.
+
+Missing or unreadable files, directories, malformed JSON, non-object JSON,
+invalid options, and unsupported formats print a concise diagnostic plus usage
+guidance and exit nonzero. Expected input errors do not print Node stack traces.
 
 ## What It Does
 
 - Reads local fixtures only.
 - Produces deterministic Markdown or JSON.
 - Keeps evidence and assumptions visible.
-- Fails fast on missing input files or unsupported formats.
+- Fails fast with user-facing diagnostics for invalid input files or formats.
 
 ## Safety Notes
 
