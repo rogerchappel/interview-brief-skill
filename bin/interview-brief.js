@@ -1,23 +1,28 @@
 #!/usr/bin/env node
-import { existsSync } from 'node:fs';
 import { createBrief, renderMarkdown } from '../src/brief.js';
+import { InputError } from '../src/parser.js';
+
+const usage = 'Usage: interview-brief <notes.md|json> [--format markdown|json]';
 
 const args = process.argv.slice(2);
 const { input, format, error } = parseArgs(args);
 
 if (error) {
   console.error(error);
-  console.error('Usage: interview-brief <notes.md|json> [--format markdown|json]');
+  console.error(usage);
   process.exit(1);
 }
 
-if (!existsSync(input)) {
-  console.error(`Input file not found: ${input}`);
-  console.error('Usage: interview-brief <notes.md|json> [--format markdown|json]');
+let brief;
+try {
+  brief = createBrief(input);
+} catch (cause) {
+  if (!(cause instanceof InputError)) throw cause;
+  console.error(cause.message);
+  console.error(usage);
   process.exit(1);
 }
 
-const brief = createBrief(input);
 if (format === 'json') {
   console.log(JSON.stringify(brief, null, 2));
 } else if (format === 'markdown') {

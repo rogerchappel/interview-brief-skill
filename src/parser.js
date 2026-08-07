@@ -1,8 +1,41 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
+
+export class InputError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'InputError';
+  }
+}
 
 export function loadInterviewInput(path) {
-  const raw = readFileSync(path, 'utf8');
-  if (path.endsWith('.json')) return normalizeJson(JSON.parse(raw), path);
+  let stats;
+  try {
+    stats = statSync(path);
+  } catch (error) {
+    if (error?.code === 'ENOENT') throw new InputError(`Input file not found: ${path}`);
+    throw new InputError(`Cannot read input file: ${path}`);
+  }
+  if (!stats.isFile()) throw new InputError(`Input path is not a regular file: ${path}`);
+
+  let raw;
+  try {
+    raw = readFileSync(path, 'utf8');
+  } catch {
+    throw new InputError(`Cannot read input file: ${path}`);
+  }
+
+  if (path.endsWith('.json')) {
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new InputError(`Invalid JSON in input file: ${path}`);
+    }
+    if (data === null || Array.isArray(data) || typeof data !== 'object') {
+      throw new InputError(`JSON input must be an object: ${path}`);
+    }
+    return normalizeJson(data, path);
+  }
   return normalizeMarkdown(raw, path);
 }
 
