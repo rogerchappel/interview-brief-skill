@@ -1,7 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdtempSync, writeFileSync, chmodSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createBrief, renderMarkdown } from '../src/brief.js';
+import { InputError, loadInterviewInput } from '../src/parser.js';
 
 test('creates grounded interview brief from markdown', () => {
   const brief = createBrief('fixtures/sample-interview.md');
@@ -105,4 +109,63 @@ test('CLI rejects incomplete or unexpected arguments', () => {
     assert.notEqual(result.status, 0, args.join(' '));
     assert.match(result.stderr, /Usage: interview-brief/);
   }
+});
+
+test('CLI reports invalid input files without stack traces', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-input-'));
+  const cases = [
+    { name: 'directory', path: directory, message: /not a regular file/ },
+    { name: 'missing', path: join(directory, 'missing.md'), message: /Input file not found/ },
+    { name: 'malformed JSON', path: join(directory, 'malformed.json'), content: '{bad', message: /Invalid JSON/ },
+    { name: 'null JSON', path: join(directory, 'null.json'), content: 'null', message: /JSON input must be an object/ },
+    { name: 'array JSON', path: join(directory, 'array.json'), content: '[]', message: /JSON input must be an object/ },
+    { name: 'primitive JSON', path: join(directory, 'primitive.json'), content: '42', message: /JSON input must be an object/ },
+  ];
+
+  for (const testCase of cases) {
+    if (testCase.content !== undefined) writeFileSync(testCase.path, testCase.content);
+    const result = spawnSync(process.execPath, ['bin/interview-brief.js', testCase.path], {
+      encoding: 'utf8',
+    });
+    assert.notEqual(result.status, 0, testCase.name);
+    assert.match(result.stderr, testCase.message, testCase.name);
+    assert.match(result.stderr, /Usage: interview-brief/, testCase.name);
+    assert.doesNotMatch(result.stderr, /\n\s+at\s/, testCase.name);
+  }
+});
+
+test('parser rejects non-files, malformed JSON, and non-object JSON', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-parser-'));
+  const inputs = [
+    { path: directory, message: /not a regular file/ },
+    { path: join(directory, 'missing.md'), message: /Input file not found/ },
+    { path: join(directory, 'bad.json'), content: '{bad', message: /Invalid JSON/ },
+    { path: join(directory, 'null.json'), content: 'null', message: /must be an object/ },
+    { path: join(directory, 'array.json'), content: '[]', message: /must be an object/ },
+    { path: join(directory, 'string.json'), content: '"notes"', message: /must be an object/ },
+  ];
+
+  for (const input of inputs) {
+    if (input.content !== undefined) writeFileSync(input.path, input.content);
+    assert.throws(() => loadInterviewInput(input.path), error => (
+      error instanceof InputError && input.message.test(error.message)
+    ));
+  }
+});
+
+test('CLI reports unreadable input without a stack trace', { skip: process.platform === 'win32' }, () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-unreadable-'));
+  const input = join(directory, 'notes.md');
+  writeFileSync(input, '# Role\nEngineer');
+  chmodSync(input, 0o000);
+
+  const result = spawnSync(process.execPath, ['bin/interview-brief.js', input], {
+    encoding: 'utf8',
+  });
+  chmodSync(input, 0o600);
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Cannot read input file/);
+  assert.match(result.stderr, /Usage: interview-brief/);
+  assert.doesNotMatch(result.stderr, /\n\s+at\s/);
 });
