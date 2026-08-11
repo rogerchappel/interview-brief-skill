@@ -79,6 +79,41 @@ test('meeting follow-up normalizes list markers and wrapped text', () => {
   assert.doesNotMatch(brief.followUps.join('\n'), /:\s*[-*]\s/);
 });
 
+test('dotted identifiers stay intact while sentence boundaries split signals', () => {
+  const brief = createBrief('fixtures/dotted-identifiers.json');
+
+  assert.deepEqual(brief.roleSignals, [
+    'Build Node.js services',
+    'Improve release automation',
+  ]);
+  assert.deepEqual(brief.companyThemes, [
+    'Uses Node.js across its developer platform',
+    'Ships weekly',
+  ]);
+  assert.deepEqual(brief.tailoredTalkingPoints, [
+    'Connect your node experience to the role evidence.',
+  ]);
+  assert.equal(
+    brief.interviewQuestions[0],
+    'What would success look like for Build Node.js services?',
+  );
+});
+
+test('dotted identifiers stay intact in candidate evidence', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-dotted-'));
+  const input = join(directory, 'candidate.json');
+  writeFileSync(input, JSON.stringify({
+    role: 'Platform engineer.',
+    company: 'Developer tools.',
+    candidate: 'Built Node.js APIs. Led reliable releases.',
+  }));
+
+  assert.deepEqual(createBrief(input).tailoredTalkingPoints, [
+    'Use candidate evidence: Built Node.js APIs',
+    'Use candidate evidence: Led reliable releases',
+  ]);
+});
+
 test('CLI accepts the format option before or after the input', () => {
   for (const args of [
     ['--format', 'json', 'fixtures/sample-interview.md'],
@@ -94,6 +129,22 @@ test('CLI accepts the format option before or after the input', () => {
     'bin/interview-brief.js', '--format', 'markdown', 'fixtures/sample-interview.md',
   ], { encoding: 'utf8' });
   assert.match(markdown, /# Interview Brief/);
+});
+
+test('CLI preserves dotted identifiers in signals and questions', () => {
+  const output = execFileSync(process.execPath, [
+    'bin/interview-brief.js', 'fixtures/dotted-identifiers.json', '--format', 'json',
+  ], { encoding: 'utf8' });
+  const brief = JSON.parse(output);
+
+  assert.deepEqual(brief.roleSignals, [
+    'Build Node.js services',
+    'Improve release automation',
+  ]);
+  assert.equal(
+    brief.interviewQuestions[0],
+    'What would success look like for Build Node.js services?',
+  );
 });
 
 test('CLI rejects incomplete or unexpected arguments', () => {
