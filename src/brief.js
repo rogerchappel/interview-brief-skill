@@ -40,7 +40,7 @@ export function renderMarkdown(brief) {
 }
 
 function bullets(text, limit) {
-  return text.split(/\n|\.|;/).map(s => s.replace(/^[-*]\s*/, '').trim()).filter(Boolean).slice(0, limit);
+  return text.split(/\n|;|\.(?=\s|$)/).map(s => s.replace(/^[-*]\s*/, '').trim()).filter(Boolean).slice(0, limit);
 }
 
 function keywords(text) {
