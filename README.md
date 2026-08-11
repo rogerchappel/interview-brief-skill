@@ -48,6 +48,11 @@ role/company text and candidate notes. Broad terms such as `experience`,
 semantic similarity are not inferred. The package does not scrape, enrich from
 live services, or call an LLM.
 
+Evidence is split at newlines, semicolons, and periods followed by whitespace
+(or the end of the input). Periods inside dotted identifiers such as `Node.js`
+remain part of the same signal. Sentence periods must therefore be followed by
+whitespace to act as delimiters.
+
 ## Development
 
 ```bash

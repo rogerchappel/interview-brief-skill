@@ -25,4 +25,10 @@ role/company text and candidate notes. Generic evidence words such as
 role-connected talking point or suppress the no-overlap risk. This heuristic
 does not infer synonyms or semantic similarity.
 
+Role, company, and candidate text is separated into signals at newlines,
+semicolons, and sentence periods followed by whitespace or end of input.
+Internal periods in dotted identifiers such as `Node.js` are preserved. A
+period immediately followed by the next sentence without whitespace is not
+treated as a delimiter.
+
 The API is deterministic and reads local files only. Callers own review and any external sharing of generated output.
