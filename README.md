@@ -17,8 +17,8 @@ node bin/interview-brief.js fixtures/sample-interview.md --format json
 node bin/interview-brief.js --format json fixtures/sample-interview.md
 ```
 
-The CLI accepts exactly one input path and an optional `--format` option in
-either order. The format defaults to `markdown` and must be `markdown` or
+The CLI accepts exactly one input path and at most one optional `--format`
+option in either order. The format defaults to `markdown` and must be `markdown` or
 `json`. The input path must name a readable regular file. Files ending in
 `.json` must contain a top-level object; supported fields are `role` (or
 `job`), `company`, `candidate` (or `notes`), and `meeting`. Other files are
