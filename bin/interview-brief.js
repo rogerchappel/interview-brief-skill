@@ -29,21 +29,25 @@ if (format === 'json') {
   console.log(renderMarkdown(brief));
 } else {
   console.error(`Unsupported format: ${format}`);
+  console.error(usage);
   process.exit(1);
 }
 
 function parseArgs(args) {
   let input;
   let format = 'markdown';
+  let hasFormat = false;
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === '--format') {
+      if (hasFormat) return { error: 'Duplicate option: --format.' };
       const value = args[index + 1];
       if (!value || value.startsWith('--')) {
         return { error: 'Missing value for --format.' };
       }
       format = value;
+      hasFormat = true;
       index += 1;
     } else if (arg.startsWith('--')) {
       return { error: `Unexpected option: ${arg}` };

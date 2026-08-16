@@ -162,6 +162,34 @@ test('CLI rejects incomplete or unexpected arguments', () => {
   }
 });
 
+test('CLI rejects duplicate format options in either ordering', () => {
+  for (const args of [
+    ['--format', 'json', 'fixtures/sample-interview.md', '--format', 'markdown'],
+    ['fixtures/sample-interview.md', '--format', 'json', '--format', 'markdown'],
+  ]) {
+    const result = spawnSync(process.execPath, ['bin/interview-brief.js', ...args], {
+      encoding: 'utf8',
+    });
+    assert.notEqual(result.status, 0, args.join(' '));
+    assert.equal(
+      result.stderr,
+      'Duplicate option: --format.\nUsage: interview-brief <notes.md|json> [--format markdown|json]\n',
+    );
+  }
+});
+
+test('CLI rejects unsupported formats with a diagnostic and usage', () => {
+  const result = spawnSync(process.execPath, [
+    'bin/interview-brief.js', 'fixtures/sample-interview.md', '--format', 'yaml',
+  ], { encoding: 'utf8' });
+
+  assert.notEqual(result.status, 0);
+  assert.equal(
+    result.stderr,
+    'Unsupported format: yaml\nUsage: interview-brief <notes.md|json> [--format markdown|json]\n',
+  );
+});
+
 test('CLI reports invalid input files without stack traces', () => {
   const directory = mkdtempSync(join(tmpdir(), 'interview-brief-input-'));
   const cases = [
