@@ -40,12 +40,18 @@ export function loadInterviewInput(path) {
 }
 
 function normalizeJson(data, path) {
+  for (const field of ['role', 'job', 'company', 'candidate', 'notes', 'meeting']) {
+    if (Object.hasOwn(data, field) && typeof data[field] !== 'string') {
+      throw new InputError(`JSON field "${field}" must be a string: ${path}`);
+    }
+  }
+
   return {
     source: path,
-    role: String(data.role || data.job || ''),
-    company: String(data.company || ''),
-    candidate: String(data.candidate || data.notes || ''),
-    meeting: String(data.meeting || ''),
+    role: data.role || data.job || '',
+    company: data.company || '',
+    candidate: data.candidate || data.notes || '',
+    meeting: data.meeting || '',
   };
 }
 

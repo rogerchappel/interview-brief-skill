@@ -232,6 +232,58 @@ test('parser rejects non-files, malformed JSON, and non-object JSON', () => {
   }
 });
 
+test('parser rejects non-string values for every supported JSON field', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-field-types-'));
+  const invalidValues = [null, [], {}, 42, true];
+
+  for (const field of ['role', 'job', 'company', 'candidate', 'notes', 'meeting']) {
+    for (const value of invalidValues) {
+      const input = join(directory, `${field}-${typeof value}-${invalidValues.indexOf(value)}.json`);
+      writeFileSync(input, JSON.stringify({ [field]: value }));
+      assert.throws(() => loadInterviewInput(input), error => (
+        error instanceof InputError
+        && error.message === `JSON field "${field}" must be a string: ${input}`
+      ), `${field}: ${JSON.stringify(value)}`);
+    }
+  }
+});
+
+test('CLI reports every invalid JSON field type without a stack trace', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-cli-field-types-'));
+  const invalidValues = [null, [], {}, 42, true];
+
+  for (const field of ['role', 'job', 'company', 'candidate', 'notes', 'meeting']) {
+    for (const value of invalidValues) {
+      const input = join(directory, `${field}-${typeof value}-${invalidValues.indexOf(value)}.json`);
+      writeFileSync(input, JSON.stringify({ [field]: value }));
+      const result = spawnSync(process.execPath, ['bin/interview-brief.js', input], {
+        encoding: 'utf8',
+      });
+      assert.notEqual(result.status, 0, `${field}: ${JSON.stringify(value)}`);
+      assert.equal(
+        result.stderr,
+        `JSON field "${field}" must be a string: ${input}\n`
+          + 'Usage: interview-brief <notes.md|json> [--format markdown|json]\n',
+      );
+      assert.doesNotMatch(result.stderr, /\n\s+at\s/);
+    }
+  }
+});
+
+test('JSON fields retain missing, empty, and alias normalization', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-normalization-'));
+  const input = join(directory, 'input.json');
+  writeFileSync(input, JSON.stringify({ role: '', job: 'Engineer', candidate: '', notes: 'Evidence' }));
+
+  assert.deepEqual(loadInterviewInput(input), {
+    source: input,
+    role: 'Engineer',
+    company: '',
+    candidate: 'Evidence',
+    meeting: '',
+  });
+});
+
 test('CLI reports unreadable input without a stack trace', { skip: process.platform === 'win32' }, () => {
   const directory = mkdtempSync(join(tmpdir(), 'interview-brief-unreadable-'));
   const input = join(directory, 'notes.md');
