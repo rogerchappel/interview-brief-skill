@@ -22,11 +22,15 @@ option in either order. The format defaults to `markdown` and must be `markdown`
 `json`. The input path must name a readable regular file. Files ending in
 `.json` must contain a top-level object; supported fields are `role` (or
 `job`), `company`, `candidate` (or `notes`), and `meeting`. Other files are
-parsed as Markdown.
+parsed as Markdown. Every supported field that is present must contain a
+string; arrays, objects, numbers, booleans, and `null` are rejected. Missing
+and empty fields normalize to empty strings, with a non-empty `job` or `notes`
+alias used when its corresponding primary field is missing or empty.
 
 Missing or unreadable files, directories, malformed JSON, non-object JSON,
-invalid options, and unsupported formats print a concise diagnostic plus usage
-guidance and exit nonzero. Expected input errors do not print Node stack traces.
+non-string supported fields, invalid options, and unsupported formats print a
+concise diagnostic plus usage guidance and exit nonzero. Expected input errors
+do not print Node stack traces.
 
 ## What It Does
 
