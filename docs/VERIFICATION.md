@@ -1,10 +1,13 @@
 # Verification Results
 
-Run on 2026-06-29 (Australia/Brisbane).
+Run on 2026-08-22 (Australia/Brisbane).
 
-- `npm test` - pass: 2 tests passed
-- `npm run check` - pass: check ok
-- `npm run build` - pass: build ok
-- `npm run smoke` - pass: generated Markdown brief from `fixtures/sample-interview.md`
+- `npm run release:check` - pass on Node.js 18, 20, and 22 in CI
+- `npm run check` - pass: static package checks completed
+- `npm test` - pass: 20 tests passed
+- `npm run build` - pass: build verification completed
+- `npm run smoke` - pass: generated a Markdown brief from `fixtures/sample-interview.md`
+- `npm run package:smoke` - pass: packed artifact contents and installed CLI/library behavior verified
 
-Release-candidate classification: ship.
+The release gate runs every command above and must pass on every supported CI
+runtime before the release candidate is classified as ready to ship.
