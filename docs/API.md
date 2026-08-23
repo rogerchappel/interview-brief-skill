@@ -35,4 +35,10 @@ Internal periods in dotted identifiers such as `Node.js` are preserved. A
 period immediately followed by the next sentence without whitespace is not
 treated as a delimiter.
 
+Markdown sections begin at level 1–6 headings named exactly `Role`, `Company`,
+`Candidate`, or `Meeting` (case-insensitive). Content before the first
+recognized heading is treated as a preamble and ignored, rather than being
+attributed to `Role`. An unrecognized heading likewise stops collection until
+the next recognized section.
+
 The API is deterministic and reads local files only. Callers own review and any external sharing of generated output.
