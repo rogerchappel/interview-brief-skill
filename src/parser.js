@@ -57,7 +57,7 @@ function normalizeJson(data, path) {
 
 function normalizeMarkdown(raw, path) {
   const items = { role: [], company: [], candidate: [], meeting: [] };
-  let current = 'role';
+  let current = null;
   let wrappingListItem = false;
   for (const line of raw.split(/\r?\n/)) {
     const heading = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
