@@ -51,6 +51,28 @@ test('unknown headings stop evidence collection for recognized sections', () => 
   assert.doesNotMatch(JSON.stringify(brief), /Free lunch|Office trivia/);
 });
 
+test('markdown preamble is not attributed to the role section', () => {
+  const brief = createBrief('fixtures/preamble-interview.md');
+
+  assert.deepEqual(brief.roleSignals, []);
+  assert.deepEqual(brief.companyThemes, ['Example Corp']);
+  assert.ok(brief.risks.includes('Role evidence is missing; keep prep generic.'));
+  assert.ok(brief.assumptions.includes('role evidence was not provided.'));
+  assert.doesNotMatch(JSON.stringify(brief), /Private preparation notes/);
+});
+
+test('CLI preserves a recognized section after ignoring markdown preamble', () => {
+  const output = execFileSync(process.execPath, [
+    'bin/interview-brief.js', 'fixtures/preamble-interview.md', '--format', 'json',
+  ], { encoding: 'utf8' });
+  const brief = JSON.parse(output);
+
+  assert.deepEqual(brief.roleSignals, []);
+  assert.deepEqual(brief.companyThemes, ['Example Corp']);
+  assert.ok(brief.risks.includes('Role evidence is missing; keep prep generic.'));
+  assert.ok(brief.assumptions.includes('role evidence was not provided.'));
+});
+
 test('wrapped markdown list items remain complete logical signals', () => {
   const brief = createBrief('fixtures/wrapped-interview.md');
 
