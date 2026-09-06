@@ -40,18 +40,21 @@ export function loadInterviewInput(path) {
 }
 
 function normalizeJson(data, path) {
-  for (const field of ['role', 'job', 'company', 'candidate', 'notes', 'meeting']) {
+  const fields = ['role', 'job', 'company', 'candidate', 'notes', 'meeting'];
+  for (const field of fields) {
     if (Object.hasOwn(data, field) && typeof data[field] !== 'string') {
       throw new InputError(`JSON field "${field}" must be a string: ${path}`);
     }
   }
 
+  const normalized = Object.fromEntries(fields.map(field => [field, data[field]?.trim() || '']));
+
   return {
     source: path,
-    role: data.role || data.job || '',
-    company: data.company || '',
-    candidate: data.candidate || data.notes || '',
-    meeting: data.meeting || '',
+    role: normalized.role || normalized.job,
+    company: normalized.company,
+    candidate: normalized.candidate || normalized.notes,
+    meeting: normalized.meeting,
   };
 }
 
