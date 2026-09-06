@@ -323,6 +323,51 @@ test('JSON fields retain missing, empty, and alias normalization', () => {
   });
 });
 
+test('JSON aliases replace whitespace-only primary fields', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-whitespace-aliases-'));
+  const input = join(directory, 'input.json');
+  writeFileSync(input, JSON.stringify({
+    role: ' \t ',
+    job: ' Platform engineer ',
+    candidate: '\n ',
+    notes: ' Shipped release automation ',
+  }));
+
+  assert.deepEqual(loadInterviewInput(input), {
+    source: input,
+    role: 'Platform engineer',
+    company: '',
+    candidate: 'Shipped release automation',
+    meeting: '',
+  });
+});
+
+test('CLI builds grounded evidence from aliases after whitespace normalization', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-cli-whitespace-aliases-'));
+  const input = join(directory, 'input.json');
+  writeFileSync(input, JSON.stringify({
+    role: '   ',
+    job: 'Platform engineer; Own release automation',
+    company: 'Developer tools',
+    candidate: '\t',
+    notes: 'Shipped release automation',
+  }));
+
+  const output = execFileSync(process.execPath, [
+    'bin/interview-brief.js', input, '--format', 'json',
+  ], { encoding: 'utf8' });
+  const brief = JSON.parse(output);
+
+  assert.deepEqual(brief.roleSignals, ['Platform engineer', 'Own release automation']);
+  assert.deepEqual(brief.tailoredTalkingPoints, [
+    'Connect your release experience to the role evidence.',
+    'Connect your automation experience to the role evidence.',
+  ]);
+  assert.ok(!brief.risks.includes('Role evidence is missing; keep prep generic.'));
+  assert.ok(!brief.assumptions.includes('role evidence was not provided.'));
+  assert.ok(!brief.assumptions.includes('candidate evidence was not provided.'));
+});
+
 test('CLI reports unreadable input without a stack trace', { skip: process.platform === 'win32' }, () => {
   const directory = mkdtempSync(join(tmpdir(), 'interview-brief-unreadable-'));
   const input = join(directory, 'notes.md');
