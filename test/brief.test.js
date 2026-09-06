@@ -61,6 +61,23 @@ test('markdown preamble is not attributed to the role section', () => {
   assert.doesNotMatch(JSON.stringify(brief), /Private preparation notes/);
 });
 
+test('markdown fenced code does not create headings or evidence', () => {
+  const brief = createBrief('fixtures/fenced-interview.md');
+
+  assert.deepEqual(brief.roleSignals, [
+    'Platform engineer',
+    'Own release automation',
+  ]);
+  assert.deepEqual(brief.companyThemes, [
+    'Developer tooling',
+    'Distributed teams',
+  ]);
+  assert.deepEqual(brief.tailoredTalkingPoints, [
+    'Connect your developer experience to the role evidence.',
+  ]);
+  assert.doesNotMatch(JSON.stringify(brief), /Fabricated fenced/);
+});
+
 test('CLI preserves a recognized section after ignoring markdown preamble', () => {
   const output = execFileSync(process.execPath, [
     'bin/interview-brief.js', 'fixtures/preamble-interview.md', '--format', 'json',
