@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Ignore headings and evidence inside Markdown backtick and tilde fenced code blocks.
+
 ## 0.1.0
 
 - Initial public release candidate for `interview-brief-skill`.

@@ -26,6 +26,9 @@ parsed as Markdown. Every supported field that is present must contain a
 string; arrays, objects, numbers, booleans, and `null` are rejected. Missing
 and empty fields normalize to empty strings, with a non-empty `job` or `notes`
 alias used when its corresponding primary field is missing or empty.
+Markdown fenced code blocks opened with backticks or tildes are ignored, so
+headings and example content inside a fence do not become interview evidence;
+ordinary section content before and after the fence is preserved.
 
 Missing or unreadable files, directories, malformed JSON, non-object JSON,
 non-string supported fields, invalid options, and unsupported formats print a
