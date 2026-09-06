@@ -14,9 +14,10 @@ Primary functions:
 file must contain a top-level object with any of `role` (or `job`), `company`,
 `candidate` (or `notes`), and `meeting`; missing fields normalize to empty
 strings. Every supported field that is present must be a string; arrays,
-objects, numbers, booleans, and `null` are invalid. Empty strings remain empty,
-except that a non-empty `job` or `notes` alias supplies the value when its
-corresponding primary field is missing or empty. Direct API calls throw an
+objects, numbers, booleans, and `null` are invalid. Values are trimmed and
+whitespace-only strings normalize to empty strings. A non-empty `job` or
+`notes` alias supplies the value when its corresponding primary field is
+missing, empty, or whitespace-only. Direct API calls throw an
 `InputError` naming a non-string field, or for a missing or unreadable file, a
 non-file path, malformed JSON, or a JSON top level that is `null`, an array, or
 a primitive. The CLI converts these expected errors into concise stderr

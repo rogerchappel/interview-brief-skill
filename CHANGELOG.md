@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Ignore headings and evidence inside Markdown backtick and tilde fenced code blocks.
+- Normalize JSON string whitespace before selecting `job` and `notes` aliases.
 
 ## 0.1.0
 
