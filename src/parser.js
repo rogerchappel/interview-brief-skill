@@ -59,7 +59,23 @@ function normalizeMarkdown(raw, path) {
   const items = { role: [], company: [], candidate: [], meeting: [] };
   let current = null;
   let wrappingListItem = false;
+  let fence = null;
   for (const line of raw.split(/\r?\n/)) {
+    if (fence) {
+      const closingFence = line.match(/^ {0,3}(`{3,}|~{3,})[ \t]*$/);
+      if (closingFence && closingFence[1][0] === fence.marker && closingFence[1].length >= fence.length) {
+        fence = null;
+      }
+      continue;
+    }
+
+    const openingFence = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+    if (openingFence && (openingFence[1][0] === '~' || !openingFence[2].includes('`'))) {
+      fence = { marker: openingFence[1][0], length: openingFence[1].length };
+      wrappingListItem = false;
+      continue;
+    }
+
     const heading = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
     if (heading) {
       const recognized = heading[1].match(/^(Role|Company|Candidate|Meeting)$/i);
