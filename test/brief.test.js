@@ -43,6 +43,27 @@ test('specific shared skills produce an evidence-backed talking point', () => {
   ));
 });
 
+test('colon-style recognized headings preserve inline section evidence', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-'));
+  const input = join(directory, 'inline-headings.md');
+  writeFileSync(input, [
+    '## Role: Platform engineer',
+    '- Own release automation',
+    '## Company: Example Corp',
+    '- Developer tooling',
+    '## Candidate: Interview notes',
+    '- Built release pipelines',
+    '## Meeting: Tuesday',
+    '- Meet the hiring panel',
+  ].join('\n'));
+
+  const brief = createBrief(input);
+  assert.deepEqual(brief.roleSignals, ['Platform engineer', 'Own release automation']);
+  assert.deepEqual(brief.companyThemes, ['Example Corp', 'Developer tooling']);
+  assert.deepEqual(brief.tailoredTalkingPoints, ['Connect your release experience to the role evidence.']);
+  assert.deepEqual(brief.followUps.slice(0, 1), ['Confirm meeting context: Tuesday']);
+});
+
 test('unknown headings stop evidence collection for recognized sections', () => {
   const brief = createBrief('fixtures/unknown-headings.md');
 

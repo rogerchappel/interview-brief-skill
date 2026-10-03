@@ -81,8 +81,9 @@ function normalizeMarkdown(raw, path) {
 
     const heading = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
     if (heading) {
-      const recognized = heading[1].match(/^(Role|Company|Candidate|Meeting)$/i);
+      const recognized = heading[1].match(/^(Role|Company|Candidate|Meeting)(?:\s*:\s*(.*))?$/i);
       current = recognized ? recognized[1].toLowerCase() : null;
+      if (recognized?.[2]) items[current].push(recognized[2].trim());
       wrappingListItem = false;
       continue;
     }
