@@ -23,7 +23,7 @@
     "CONTRIBUTING.md"
   ],
   "scripts": {
-    "test": "node --test",
+    "test": "node --test test/*.test.js",
     "check": "node scripts/check.js",
     "build": "node scripts/build.js",
     "smoke": "node bin/interview-brief.js fixtures/sample-interview.md --format markdown",
