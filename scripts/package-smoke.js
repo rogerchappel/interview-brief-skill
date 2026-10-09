@@ -19,10 +19,20 @@ const required = [
   "CONTRIBUTING.md"
 ];
 const missing = required.filter((file) => !files.has(file));
+const requiredFixtures = [
+  "fixtures/sample-interview.md",
+  "fixtures/sample-interview.json"
+];
+const missingFixtures = requiredFixtures.filter((file) => !files.has(file));
 
 if (missing.length > 0) {
   console.error(`Package smoke failed; missing: ${missing.join(", ")}`);
   process.exit(1);
 }
 
-console.log(`package smoke ok: ${pack.filename} includes ${pack.files.length} files`);
+if (missingFixtures.length > 0) {
+  console.error(`Package smoke failed; missing required fixtures: ${missingFixtures.join(", ")}`);
+  process.exit(1);
+}
+
+console.log(`package smoke ok: ${pack.filename} includes ${pack.files.length} files, including required fixtures`);
