@@ -83,3 +83,7 @@ dry-run tarball.
 
 See [SECURITY.md](SECURITY.md) for supported versions and vulnerability
 reporting guidance. Use synthetic interview notes in bug reports and fixtures.
+
+### Export the output schema
+
+Run `node bin/interview-brief.js --schema` to print the versioned JSON Schema Draft 2020-12 contract. This is an opt-in standalone export; default CLI output is unchanged.

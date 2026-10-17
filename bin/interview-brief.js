@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 import { createBrief, renderMarkdown } from '../src/brief.js';
 import { InputError } from '../src/parser.js';
+import { BRIEF_SCHEMA } from '../src/schema.js';
 
 const usage = 'Usage: interview-brief <notes.md|json> [--format markdown|json]';
-
 const args = process.argv.slice(2);
+const schema = args.length === 1 && args[0] === '--schema';
 const { input, format, error } = parseArgs(args);
 
-if (error) {
+if (schema) {
+  console.log(JSON.stringify(BRIEF_SCHEMA, null, 2));
+} else if (error) {
   console.error(error);
   console.error(usage);
   process.exit(1);
