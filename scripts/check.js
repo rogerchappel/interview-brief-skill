@@ -7,5 +7,6 @@ const readme = readFileSync('README.md', 'utf8');
 for (const phrase of ['Quickstart', 'Safety Notes', 'Limitations']) {
   if (!readme.includes(phrase)) fail(`README.md missing ${phrase}`);
 }
+await import('./check-node-matrix.js');
 console.log('check ok');
 function fail(message) { console.error(message); process.exit(1); }
