@@ -5,7 +5,7 @@ Local-first interview preparation brief skill for job and company notes. It is d
 ## Quickstart
 
 ```bash
-npm install
+npm ci
 npm run smoke
 ```
 
