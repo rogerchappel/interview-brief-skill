@@ -8,6 +8,7 @@ on:
 
 jobs:
   release-check:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
       matrix:
