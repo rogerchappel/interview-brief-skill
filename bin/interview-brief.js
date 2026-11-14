@@ -10,6 +10,7 @@ const { input, format, error } = parseArgs(args);
 
 if (schema) {
   console.log(JSON.stringify(BRIEF_SCHEMA, null, 2));
+  process.exit(0);
 } else if (error) {
   console.error(error);
   console.error(usage);
