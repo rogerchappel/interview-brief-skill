@@ -7,6 +7,15 @@ import { join } from 'node:path';
 import { createBrief, renderMarkdown } from '../src/brief.js';
 import { InputError, loadInterviewInput } from '../src/parser.js';
 
+test('standalone schema export prints valid schema and exits successfully', () => {
+  const result = spawnSync(process.execPath, ['bin/interview-brief.js', '--schema'], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stderr, '');
+  const schema = JSON.parse(result.stdout);
+  assert.equal(schema.$schema, 'https://json-schema.org/draft/2020-12/schema');
+  assert.equal(schema.title, 'Interview Brief');
+});
+
 test('creates grounded interview brief from markdown', () => {
   const brief = createBrief('fixtures/sample-interview.md');
   assert.ok(brief.roleSignals.length >= 3);
