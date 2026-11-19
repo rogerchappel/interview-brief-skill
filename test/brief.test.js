@@ -139,6 +139,27 @@ test('wrapped markdown list items remain complete logical signals', () => {
   );
 });
 
+test('indented continuation requires two spaces and unrelated indentation starts a new signal', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'interview-brief-continuation-'));
+  const input = join(directory, 'notes.md');
+  writeFileSync(input, [
+    '## Role',
+    '- Build reliable tools',
+    '  for interviewers',
+    ' unrelated indented note',
+    '    deeply indented note',
+    '',
+    '  detached paragraph',
+  ].join('\n'));
+
+  assert.deepEqual(loadInterviewInput(input).role.split('\n').filter(Boolean), [
+    'Build reliable tools for interviewers',
+    'unrelated indented note',
+    'deeply indented note',
+    'detached paragraph',
+  ]);
+});
+
 test('meeting follow-up normalizes list markers and wrapped text', () => {
   const brief = createBrief('fixtures/wrapped-interview.md');
 
