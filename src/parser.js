@@ -96,7 +96,7 @@ function normalizeMarkdown(raw, path) {
     if (listItem) {
       items[current].push(listItem[1].trim());
       wrappingListItem = true;
-    } else if (wrappingListItem && /^\s+/.test(line)) {
+    } else if (wrappingListItem && /^ {2,}\S/.test(line)) {
       const last = items[current].length - 1;
       items[current][last] += ` ${line.trim()}`;
     } else {
