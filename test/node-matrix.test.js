@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const root = new URL('../', import.meta.url);
 
-test('CI Node.js matrix covers the package engine minimum and current runtime', async () => {
+test('CI Node.js matrix covers the package engine minimum without a pinned current major', async () => {
   const pkg = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
   const workflow = await readFile(new URL('.github/workflows/ci.yml', root), 'utf8');
   const minimum = pkg.engines?.node?.match(/^>=(\d+)$/)?.[1];
@@ -16,5 +16,5 @@ test('CI Node.js matrix covers the package engine minimum and current runtime', 
   assert.ok(versions.length, 'CI Node.js matrix is not empty');
   assert.ok(versions.includes(Number(minimum)), `matrix includes package minimum ${minimum}`);
   assert.equal(Math.min(...versions), Number(minimum), 'matrix minimum matches package minimum');
-  assert.ok(versions.includes(24), 'matrix includes current Node.js 24 runtime');
+  assert.deepEqual(versions, [...new Set(versions)], 'matrix contains no duplicates');
 });

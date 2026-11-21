@@ -10,7 +10,6 @@ if (!matrix) fail('.github/workflows/ci.yml must declare a numeric node-version 
 const versions = [...matrix[1].matchAll(/^[ \t]+-[ \t]+(\d+)[ \t]*$/gm)].map(([, version]) => Number(version));
 if (versions.length === 0) fail('CI Node.js matrix must not be empty');
 if (!versions.includes(Number(minimum))) fail(`CI Node.js matrix must include package minimum ${minimum}`);
-if (!versions.includes(24)) fail('CI Node.js matrix must include current Node.js 24 runtime');
 if (new Set(versions).size !== versions.length) fail('CI Node.js matrix must not contain duplicate versions');
 if (Math.min(...versions) !== Number(minimum)) fail(`CI Node.js matrix minimum ${Math.min(...versions)} does not match package minimum ${minimum}`);
 console.log(`Node.js engine ${packageJson.engines.node} matches CI matrix ${versions.join(', ')}`);
